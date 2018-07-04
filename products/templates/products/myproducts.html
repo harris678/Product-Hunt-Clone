@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<br />
+<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #e3f2fd;">
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link {% if products.first.is_public %}active{% endif %}" href="javascript:{document.getElementById('public').submit()}">Public</a>
+        <form id="public" method="POST" action="{% url 'isPublic' 'public' %}">
+          {% csrf_token %}
+          <input type="hidden" >
+        </form>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if not products.first.is_public %}active{% endif %}" href="javascript:{document.getElementById('private').submit()}">Private</a>
+        <form id="private" method="POST" action="{% url 'isPublic' 'private' %}">
+          {% csrf_token %}
+          <input type="hidden" >
+        </form>
+      </li>
+    </ul>
+  </div>
+</nav>
+{% for product in products %}
+<div class="pt-3">
+<div class="card bg-light">
+<div class="row pt-3">
+<div class="col-2" onclick="window.location='{% url 'detail' product.id %}';" style="cursor:pointer;">
+  <img src="{{product.icon.url}}" class="img-fluid" />
+</div>
+<div class="col-6" onclick="window.location='{% url 'detail' product.id %}';" style="cursor:pointer;">
+  <h1>{{product.title}}</h1>
+  <p>{{product.summary}}</p>
+</div>
+<div class=col-1>
+</div>
+<div class="col-2 pr-1">
+  <a href="{% url 'edit' product.id %}" ><button class="btn btn-primary btn-lg btn-block">Edit</button></a>
+  {% if product.is_public %}
+  <h5 class=text-center>Upvotes: {{product.votes_total}} </h5>
+  {% else %}
+  {% endif %}
+<form id="upvote{{product.id}}" method="POST" action="{% url 'upvote' product.id %}">
+  {% csrf_token %}
+  <input type="hidden" >
+</form>
+
+</div>
+</div>
+</div>
+</div>
+{% empty %}
+<h6>No Products here yet...</h6>
+{% endfor %}
+
+{% endblock %}

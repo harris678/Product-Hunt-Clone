@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-1">
+    <img src="{{product.icon.url}}" class="img-fluid" height=50 width=50  />
+  </div>
+  <div class="col-16">
+    <a href="{{ product.url }}"><h1>{{product.title}}</h1></a>
+  </div>
+</div>
+<br />
+<div class="row">
+  <div class="col-8">
+    <img src="{{product.image.url}}" class="img-fluid" />
+  </div>
+  <div class=col-1>
+  </div>
+  <div class="col-2 pr-1">
+    {% if product.is_public %}
+    {% if is_upvoting %}
+    <a href="" ><button class="btn btn-default btn-lg btn-block"><span class="oi oi-carex t-top"></span>Upvote</button></a>
+    {% else %}
+      <a href="javascript:{document.getElementById('upvote').submit()}" ><button class="btn btn-primary btn-lg btn-block"><span class="oi oi-caret-top"></span>Upvote</button></a>
+    {% endif %}
+    <h5 class=text-center> Upvotes: {{product.votes_total}} </h5>
+    <h5 class=text-center><a href="#reviewssec">Reviews: {{ product.reviews.count }}</a></h5>
+    {% else %}
+    <a href="{% url 'edit' product.id %}" ><button class="btn btn-primary btn-lg btn-block">Edit</button></a>
+    {% endif %}
+  </div>
+</div>
+<div class="row pt-3">
+  <div class="col-4">
+    <h4>Hunted by {{ product.user.username }}</h4>
+  </div>
+  <div class="col-4 text-right">
+    <h4><span class="oi oi-clock"></span> {{ product.pub_date_pretty }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-8">
+    <p>{{ product.body }}</p>
+  </div>
+</div>
+<form id="upvote" method="POST" action="{% url 'upvote' product.id %}">
+  {% csrf_token %}
+  <input type="hidden" >
+</form>
+<div class="row" id="reviewssec">
+  <div class="col-8">
+    <hr>
+<form class='form' method='GET' action="{% url 'add_review' product.id %}" >
+<input type="text" class="form-control" placeholder="Add Review..." name="q"></input>
+<button class="btn btn-default" type="submit" >Add Review</button>
+</form>
+{% for review in product.reviews.all %}
+<div class="pt-3">
+<div class="card bg-light">
+<div class="row pt-3">
+    <div class="review" style="margin: 20px 0px 20px 20px;">
+        <div class="date">{{ review.created_date }}</div>
+        <strong>{{ review.author }}</strong>
+        <p>{{ review.text|linebreaks }}</p>
+    </div>
+  </div>
+  </div>
+  </div>
+{% empty %}
+    <p>No comments here yet :(</p>
+{% endfor %}
+</div>
+<div class="col-4">
+</div>
+</div>
+{% endblock %}
